@@ -15,7 +15,6 @@ namespace Test.Services
 		[SetUp]
 		public void CreateDb()
 		{
-
 			var ctx = new DataSourceContext();
 			ctx.Database.Migrate();
 			ctx.Database.ExecuteSqlRaw("delete from DataSources;");
@@ -23,9 +22,9 @@ namespace Test.Services
 		}
 
 		[Test]
-		public void Test1()
+		public void TestConfigTypeMapping()
 		{
-			int sulId = 0; 
+			int sulId = 0;
 			using (var unit = new DataSourceUnitOfWork())
 			{
 				unit.DataSourceRepository.AddSource(new DataSource
@@ -35,7 +34,7 @@ namespace Test.Services
 					{
 						Method = "GET",
 						Url = "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/Restaurant_Open_Data/FeatureServer/0/query",
-						QueryParams = new Dictionary<string, string> { 
+						QueryParams = new Dictionary<string, string> {
 							{ "where", "objectid>1900" },
 							{ "outfields", "*" },
 							{ "f", "json" },
@@ -76,6 +75,25 @@ namespace Test.Services
 				Assert.IsNotNull(sul);
 				Assert.IsInstanceOf<AwsS3SourceConfig>(sul.Config);
 				Assert.AreEqual("s3-user-list", sul.Name);
+			}
+		}
+
+		[Test]
+		public void TestNameUniqueness()
+		{
+			using (var unit = new DataSourceUnitOfWork())
+			{
+				unit.DataSourceRepository.AddSource(new DataSource
+				{
+					Name = "dont-dupe-me"
+				});
+				unit.DataSourceRepository.AddSource(new DataSource
+				{
+					Name = "dont-dupe-me"
+				});
+
+				Assert.Throws<DbUpdateException>(() => { unit.Save(); });
+
 			}
 		}
 	}

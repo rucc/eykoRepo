@@ -1,5 +1,7 @@
 ﻿using EykoChallenge.Models;
+using log4net;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +13,17 @@ namespace EykoChallenge.Services
 	class DataSourceRepository : IDataSourceRepository
 	{
 		readonly DataSourceContext m_ctx;
+		readonly ILog m_logger;
 
 		public DataSourceRepository(DataSourceContext ctx)
 		{
 			m_ctx = ctx;
+			m_logger = LogManager.GetLogger(GetType());
 		}
 
 		public void AddSource(DataSource ds)
 		{
+			m_logger.Info($"Adding source {JsonConvert.SerializeObject(ds)}");
 			m_ctx.DataSources.Add(ds);
 		}
 
@@ -34,6 +39,7 @@ namespace EykoChallenge.Services
 
 		public void RemoveSource(DataSource ds)
 		{
+			m_logger.Info($"Removing source {ds.Id}/{ds.Name}");
 			m_ctx.DataSources.Remove(ds);
 		}
 	}

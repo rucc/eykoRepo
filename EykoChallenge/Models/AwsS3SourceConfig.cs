@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EykoChallenge.Models
 {
-	class AwsS3SourceConfig : DataSourceConfig
+	public class AwsS3SourceConfig : DataSourceConfig
 	{
 		public string Bucket { get; set; }
 		public string ObjectKey { get; set; }

@@ -2,4 +2,6 @@ EykoChallenge/bin*
 EykoChallenge/obj*
 EykoChallenge/.vs/*
 .vs/*
+Test/bin*
+Test/obj*
 

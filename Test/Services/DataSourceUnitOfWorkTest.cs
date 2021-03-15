@@ -67,6 +67,9 @@ namespace Test.Services
 				Assert.IsInstanceOf<HttpApiSourceConfig>(ds.Config);
 				Assert.IsNotNull(ds.Id);
 				Assert.Throws<InvalidCastException>(() => { var x = (AwsS3SourceConfig)ds.Config; });
+				var httpCfg = (HttpApiSourceConfig)ds.Config;
+				Assert.IsTrue(httpCfg.QueryParams.ContainsKey("f"));
+				Assert.AreEqual("json", httpCfg.QueryParams["f"]);
 
 				ds = unit.DataSourceRepository.GetSourceByName("fake");
 				Assert.IsNull(ds);
@@ -91,9 +94,17 @@ namespace Test.Services
 				{
 					Name = "dont-dupe-me"
 				});
-
 				Assert.Throws<DbUpdateException>(() => { unit.Save(); });
+			}
+		}
 
+		[Test]
+		public void TestNameRequired()
+		{
+			using (var unit = new DataSourceUnitOfWork())
+			{
+				unit.DataSourceRepository.AddSource(new DataSource());
+				Assert.Throws<DbUpdateException>(() => { unit.Save(); });
 			}
 		}
 	}
